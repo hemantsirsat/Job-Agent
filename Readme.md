@@ -25,6 +25,7 @@ Job Agent
 - `Job Agent.log`: Log file to track application events.
 - `jobs.csv`: File where job postings are saved.
 - `.env`: Environment file to store sensitive information such as API keys and file paths.
+- `app.py`: Python file to connect with locally hosted deepseek-r1 model.
 
 ## Requirements
 - Python 3.11+ (browser_use requirement)
