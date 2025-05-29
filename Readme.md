@@ -14,11 +14,45 @@ This project is an automated job application tool that integrates a browser cont
 ## Project Structure
 ```
 Job Agent
+|-- Lambda functions
+    |-- extract-cv-text.py
+    |-- parse-cv.py
+    |-- extract-job-keywords.py
+    |-- fetch-jobs.py
+    |-- job-scoring.py
+    |-- store-jobs-matches-to-s3.py
 |-- Job Agent.log
 |-- jobs.csv
 |-- jobAgent.py
 |-- .env
 ```
+
+### Lambda Functions
+
+#### 📄 extract-cv-text.py
+- This Lambda function is triggered by an S3 event when a CV PDF is uploaded. It extracts the raw text from the PDF using `PyPDF2`, then invokes the `parse-cv` Lambda function by passing the extracted text.
+- This serves as the entry point for processing candidate resumes.
+
+#### 🧠 parse-cv.py
+- This Lambda function receives raw resume text, parses it using the Gemini LLM to extract structured information (e.g., name, email, skills, education, experience), and stores it in S3. 
+- It then triggers a chain of Lambda functions to extract job-related keywords, fetch relevant job listings, score them based on CV fit, and finally store the top results in another S3 bucket.
+
+#### 🔍 extract-job-keywords.py
+- This Lambda function takes a structured CV JSON as input and uses Gemini LLM to extract the top 3 most relevant job field keywords. 
+- It filters out tools, libraries, and generic terms, returning only the core areas of expertise suitable for matching relevant job listings.
+
+#### 📄 fetch-jobs.py
+- This Lambda function queries the Adzuna Jobs API using a list of relevant job field keywords extracted from a candidate's profile. 
+- It retrieves job postings for each keyword and returns a combined list of matching job results.
+
+#### 🎯 job-scoring.py
+- This Lambda function evaluates how well each job posting matches a candidate's profile using the Gemini LLM. 
+- It generates a relevance score (0–100) and an explanation for each job by comparing the candidate's skills, education, and experience with the job description. 
+- The scores are returned in JSON format.
+
+#### 💾 store-job-matches-to-s3.py
+- This Lambda function stores scored job matches into an Amazon S3 bucket as a CSV file. 
+- Each user has a dedicated folder (based on their email), and job entries are organized in tabular format. If a job with the same ID already exists, it is automatically updated with the new score and details.
 
 ### Key Components
 - `jobAgent.py`: The main entry point of the project.
