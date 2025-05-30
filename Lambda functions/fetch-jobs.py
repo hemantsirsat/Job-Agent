@@ -15,7 +15,7 @@ def lambda_handler(event, context):
             params = {
                 "app_id": adzuna_app_id,
                 "app_key": adzuna_api_key,
-                "results_per_page": 10,
+                "results_per_page": 3,
                 "what": keyword,
                 # "where": "Germany",
                 "full_time": 1,
@@ -28,11 +28,13 @@ def lambda_handler(event, context):
                 results.extend(jobs)
             except Exception as e:
                 print(f"Error fetching jobs from Adzuna API: {e}")
-        print(f"Results: {json.dumps(results)}")
-        return {
+
+        result = {
             "statusCode": 200,
             "body": json.dumps(results)
         }
+        print(f"Results: {result}")
+        return result
     except Exception as e:
         print(e)
         return {

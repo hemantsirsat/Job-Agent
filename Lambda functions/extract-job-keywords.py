@@ -44,13 +44,15 @@ def lambda_handler(event, context):
             logger.error(f"Failed to parse model output: {result}")
             raise parse_err
 
-        logger.info(f"Extracted keywords: {keywords}")
-        return {
+        result = {
             "statusCode": 200,
             "body": json.dumps({
                 "keywords": keywords
             })
         }
+        logger.info(f"Extracted keywords: {result}")
+
+        return result
 
     except Exception as e:
         logger.error(f"Error in extract_keywords lambda: {str(e)}")

@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import time
 import boto3
 from datetime import datetime
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -8,7 +9,6 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 # Initialize LLM
 gemini_api_key = os.environ["GEMINI_API_KEY"]
 llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash-exp', google_api_key=gemini_api_key)
-
 
 def build_scoring_prompt(job, cv):
     return f"""
@@ -35,7 +35,7 @@ def build_scoring_prompt(job, cv):
 
         ```json
         {{
-        "score": 0-100,
+        "score": 0–100,
         "reason": "Short explanation"
         }}""".strip()
 
@@ -54,6 +54,7 @@ def lambda_handler(event, context):
         except Exception as e:
             score = 0
             reason = f"Error: {str(e)}"
+            time.sleep(3)
         job["score"] = json.dumps({"score": score, "reason": reason})
         print(f"Job {job.get('id', 'N/A')} scored {score} reason: {reason}")
     return {
