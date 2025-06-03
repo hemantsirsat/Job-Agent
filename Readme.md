@@ -54,6 +54,84 @@ Job Agent
 - This Lambda function stores scored job matches into an Amazon S3 bucket as a CSV file. 
 - Each user has a dedicated folder (based on their email), and job entries are organized in tabular format. If a job with the same ID already exists, it is automatically updated with the new score and details.
 
+### APIs
+This project defines multiple secure API endpoints.
+
+#### Job-CV Matching API
+- This API securely sends parsed CV and job data to an AWS Lambda function, which uses **prompt engineering** with a Large Language Model (LLM) (Gemini) to evaluate how well a CV matches each job.
+
+    🚀 How to Use This API
+
+    URL: https://aydopiql03.execute-api.eu-central-1.amazonaws.com/development-env
+
+    Make a `POST` request to the API with the following JSON payload:
+
+        {
+        "cv": {
+            "Full Name": "YOUR NAME",
+            "Email": "name@domain.com",
+            "Skills": "Some skills like C, Python, R, ...",
+            "Education": [
+            {
+                "Degree": "Master’s in xxx, xxxx",
+                "Institution": "xxxx, xxxx",
+                "Duration": "xxxx-xx"
+            },
+            {
+                "Degree": "Bachelor of xxxx, xxxx ",
+                "Institution": "xxxx, xxxx",
+                "Duration": "xxxx-xx"
+            }
+            ],
+            "Work Experience": [
+            {
+                "Title": "xxxx",
+                "Company": "xxxx",
+                "Duration": "xxx - Present"
+            },
+            ]
+        },
+        "jobs": [
+            {
+            "id": "xxxx",
+            "title": "xxxx",
+            "company": {
+                "display_name": "xxxx"
+            },
+            "description": "xxxx",
+            "location": {
+                "display_name": "xxxx"
+            },
+            }
+        ]
+        }
+
+    Response from the API:
+    
+        {
+            "statusCode": 200,
+            "body": "{\"jobs\": [{...}]}"
+        }
+
+    Each job in the response has the following structure:
+
+        {
+            "id": "xxxx",
+            "title": "xxxx",
+            "company": {
+                "display_name": "xxxx"
+            },
+            "description": "xxxx",
+            "location": {
+                "display_name": "xxxx"
+            },
+            "score": {
+                "score": "0-100",
+                "reason": "xxxx"
+            }
+        }
+
+
 ### Key Components
 - `jobAgent.py`: The main entry point of the project.
 - `Job Agent.log`: Log file to track application events.
